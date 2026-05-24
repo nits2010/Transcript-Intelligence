@@ -1,7 +1,16 @@
 # Transcript Intelligence — Pipeline Configuration
 # All thresholds, weights, colors, and taxonomy keywords live here.
 # Edit this file to tune the pipeline without touching Python code.
-# Can be hosted remotely and reloaded at runtime via ConfigLoader.load_url().
+
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
+logging:
+  level: INFO         # DEBUG | INFO | WARNING | ERROR
+  format: text        # text (human-readable) | json (structured, for log aggregators)
+  file: null          # null = console only; or a path e.g. "logs/pipeline.log"
+  max_bytes: 10485760 # 10 MB per file before rotation (only used when file is set)
+  backup_count: 3     # number of rotated files to keep
 
 # ---------------------------------------------------------------------------
 # Domain

@@ -14,6 +14,9 @@ import plotly.express as px
 
 from .base import BaseAnalysis
 from .config import DEFAULT_CONFIG, PipelineConfig
+from .logger import get_logger
+
+_log = get_logger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CHARTS_DIR = _PROJECT_ROOT / "output" / "charts"
@@ -73,8 +76,7 @@ class SentimentAnalysis(BaseAnalysis):
         return df
 
     def _summarize(self, df: pd.DataFrame) -> None:
-        print("\n=== Task 2: Sentiment by Call Type ===")
-        print(self._by_type.round(2).to_string())
+        _log.info("=== Task 2: Sentiment by Call Type ===\n%s", self._by_type.round(2).to_string())
 
     def _save_charts(self, df: pd.DataFrame, charts_dir: Path) -> None:
         colors = self._config.call_type_colors
@@ -97,7 +99,7 @@ class SentimentAnalysis(BaseAnalysis):
         fig1.update_layout(showlegend=False, height=500)
         out1 = charts_dir / "task2a_sentiment_by_call_type.html"
         fig1.write_html(str(out1))
-        print(f"Chart -> {out1}")
+        _log.debug("Chart saved: %s", out1)
 
         # 2. Line: weekly avg sentiment per call type
         fig2 = px.line(
@@ -124,7 +126,7 @@ class SentimentAnalysis(BaseAnalysis):
         fig2.update_layout(height=450)
         out2 = charts_dir / "task2b_sentiment_over_time.html"
         fig2.write_html(str(out2))
-        print(f"Chart -> {out2}")
+        _log.debug("Chart saved: %s", out2)
 
         # 3. Scatter: meeting sentiment vs sentence negativity ratio
         try:
@@ -154,7 +156,7 @@ class SentimentAnalysis(BaseAnalysis):
         fig3.update_layout(height=480)
         out3 = charts_dir / "task2c_negativity_density.html"
         fig3.write_html(str(out3))
-        print(f"Chart -> {out3}")
+        _log.debug("Chart saved: %s", out3)
 
         # 4. Bar: churn signal concentration by customer domain
         if self._churn_agg is not None:
@@ -179,7 +181,7 @@ class SentimentAnalysis(BaseAnalysis):
             fig4.update_layout(height=520)
             out4 = charts_dir / "task2d_churn_signal_concentration.html"
             fig4.write_html(str(out4))
-            print(f"Chart -> {out4}")
+            _log.debug("Chart saved: %s", out4)
 
         # 5. Heatmap: topic category x call type avg sentiment
         if "topic_category" in df.columns:
@@ -201,7 +203,7 @@ class SentimentAnalysis(BaseAnalysis):
             fig5.update_layout(height=480)
             out5 = charts_dir / "task2e_sentiment_heatmap.html"
             fig5.write_html(str(out5))
-            print(f"Chart -> {out5}")
+            _log.debug("Chart saved: %s", out5)
 
         # 6. Stacked bar: sentiment label distribution by call type
         label_counts = (
@@ -230,7 +232,7 @@ class SentimentAnalysis(BaseAnalysis):
         fig6.update_layout(height=450)
         out6 = charts_dir / "task2f_sentiment_label_distribution.html"
         fig6.write_html(str(out6))
-        print(f"Chart -> {out6}")
+        _log.debug("Chart saved: %s", out6)
 
 
 # ---------------------------------------------------------------------------

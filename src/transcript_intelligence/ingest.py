@@ -14,6 +14,9 @@ import pandas as pd
 
 from .base import CallTypeStrategy
 from .config import DEFAULT_CONFIG, PipelineConfig
+from .logger import get_logger
+
+_log = get_logger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DATASET_PATH = _PROJECT_ROOT / "dataset"
@@ -97,19 +100,19 @@ def load_all_meetings(
         if not meeting_dir.is_dir():
             continue
         try:
-            mi = json.loads((meeting_dir / "meeting-info.json").read_text(encoding="utf-8"))
-            su = json.loads((meeting_dir / "summary.json").read_text(encoding="utf-8"))
-            tr = json.loads((meeting_dir / "transcript.json").read_text(encoding="utf-8"))
-            sp = json.loads((meeting_dir / "speakers.json").read_text(encoding="utf-8"))
-            ev = json.loads((meeting_dir / "events.json").read_text(encoding="utf-8"))
-            sm = json.loads((meeting_dir / "speaker-meta.json").read_text(encoding="utf-8"))
+            meeting_info = json.loads((meeting_dir / "meeting-info.json").read_text(encoding="utf-8"))
+            summary = json.loads((meeting_dir / "summary.json").read_text(encoding="utf-8"))
+            transcripts = json.loads((meeting_dir / "transcript.json").read_text(encoding="utf-8"))
+            speakers = json.loads((meeting_dir / "speakers.json").read_text(encoding="utf-8"))
+            events = json.loads((meeting_dir / "events.json").read_text(encoding="utf-8"))
+            speaker_meta = json.loads((meeting_dir / "speaker-meta.json").read_text(encoding="utf-8"))
         except Exception as e:
-            print(f"  [skip] {meeting_dir.name}: {e}")
+            _log.warning("Skipping %s: %s", meeting_dir.name, e)
             continue
 
-        call_type = classify_call_type(mi["title"], mi["allEmails"], config)
+        call_type = classify_call_type(meeting_info["title"], meeting_info["allEmails"], config)
 
-        sentences = tr.get("data", [])
+        sentences = transcripts.get("data", [])
         sent_counts: dict[str, int] = {}
         for s in sentences:
             t = s.get("sentimentType", "neutral")
@@ -117,37 +120,37 @@ def load_all_meetings(
         total = len(sentences) or 1
         neg_ratio = sent_counts.get("negative", 0) / total
 
-        key_moments = su.get("keyMoments", [])
+        key_moments = summary.get("keyMoments", [])
         churn_signals = [km for km in key_moments if km.get("type") == "churn_signal"]
         technical_issues = [km for km in key_moments if km.get("type") == "technical_issue"]
 
         customer_domains = list({
             e.split("@")[1]
-            for e in mi["allEmails"]
+            for e in meeting_info["allEmails"]
             if not e.endswith(config.aegis_domain)
         })
 
         records.append({
-            "meeting_id": mi["meetingId"],
-            "title": mi["title"],
-            "start_time": pd.Timestamp(mi["startTime"]),
-            "duration_min": float(mi.get("duration", 0.0)),
+            "meeting_id": meeting_info["meetingId"],
+            "title": meeting_info["title"],
+            "start_time": pd.Timestamp(meeting_info["startTime"]),
+            "duration_min": float(meeting_info.get("duration", 0.0)),
             "call_type": call_type,
-            "raw_topics": su.get("topics", []),
-            "sentiment_label": su.get("overallSentiment", ""),
-            "sentiment_score": float(su.get("sentimentScore", 3.0)),
-            "summary": su.get("summary", ""),
-            "action_items": su.get("actionItems", []),
+            "raw_topics": summary.get("topics", []),
+            "sentiment_label": summary.get("overallSentiment", ""),
+            "sentiment_score": float(summary.get("sentimentScore", 3.0)),
+            "summary": summary.get("summary", ""),
+            "action_items": summary.get("actionItems", []),
             "key_moments": key_moments,
             "churn_signal_count": len(churn_signals),
             "technical_issue_count": len(technical_issues),
             "sentence_count": len(sentences),
             "neg_sentence_ratio": round(neg_ratio, 4),
-            "all_emails": mi["allEmails"],
+            "all_emails": meeting_info["allEmails"],
             "customer_domains": customer_domains,
-            "speakers_data": sp,
-            "events_data": ev,
-            "speaker_meta": sm,
+            "speakers_data": speakers,
+            "events_data": events,
+            "speaker_meta": speaker_meta,
         })
 
     df = pd.DataFrame(records)

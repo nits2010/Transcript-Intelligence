@@ -14,6 +14,9 @@ import plotly.express as px
 
 from .base import BaseAnalysis
 from .config import DEFAULT_CONFIG, PipelineConfig
+from .logger import get_logger
+
+_log = get_logger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CHARTS_DIR = _PROJECT_ROOT / "output" / "charts"
@@ -95,13 +98,13 @@ class CustomerTrajectoryAnalysis(BaseAnalysis):
 
     def _summarize(self, df: pd.DataFrame) -> None:
         min_meetings = self._config.min_trajectory_meetings
-        print(f"\n=== Bonus 4: Customer Sentiment Trajectory ===")
-        print(
-            f"Tracking {len(self._qualified)} customers with {min_meetings}+ meetings "
-            f"({len(self._tl_filtered)} data points)"
+        _log.info(
+            "=== Bonus 4: Customer Sentiment Trajectory ==="
+            " Tracking %d customers with %d+ meetings (%d data points)"
+            "\nCustomer trend summary:\n%s",
+            len(self._qualified), min_meetings, len(self._tl_filtered),
+            self.result_df.to_string(index=False),
         )
-        print("\nCustomer trend summary:")
-        print(self.result_df.to_string(index=False))
 
     def _save_charts(self, df: pd.DataFrame, charts_dir: Path) -> None:
         colors = self._config.trend_colors
@@ -132,7 +135,7 @@ class CustomerTrajectoryAnalysis(BaseAnalysis):
         fig1.update_layout(height=540, legend_title_text="Customer Domain")
         out1 = charts_dir / "bonus4_customer_trajectory.html"
         fig1.write_html(str(out1))
-        print(f"Chart -> {out1}")
+        _log.debug("Chart saved: %s", out1)
 
         fig2 = px.bar(
             self.result_df.sort_values("avg_sentiment"),
@@ -155,7 +158,7 @@ class CustomerTrajectoryAnalysis(BaseAnalysis):
         fig2.update_layout(height=max(400, len(self.result_df) * 24))
         out2 = charts_dir / "bonus4_trend_summary.html"
         fig2.write_html(str(out2))
-        print(f"Chart -> {out2}")
+        _log.debug("Chart saved: %s", out2)
 
         tl = self._tl_filtered.copy()
         tl["month"] = tl["start_time"].dt.to_period("M").astype(str)
@@ -180,7 +183,7 @@ class CustomerTrajectoryAnalysis(BaseAnalysis):
             fig3.update_layout(height=max(380, len(self._qualified) * 26))
             out3 = charts_dir / "bonus4_monthly_heatmap.html"
             fig3.write_html(str(out3))
-            print(f"Chart -> {out3}")
+            _log.debug("Chart saved: %s", out3)
 
 
 # ---------------------------------------------------------------------------

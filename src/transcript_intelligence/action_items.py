@@ -16,6 +16,9 @@ import plotly.express as px
 from .base import BaseAnalysis
 from .config import DEFAULT_CONFIG, PipelineConfig
 from .ingest import AEGIS_DOMAIN
+from .logger import get_logger
+
+_log = get_logger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CHARTS_DIR = _PROJECT_ROOT / "output" / "charts"
@@ -118,13 +121,15 @@ class ActionItemAnalysis(BaseAnalysis):
         return df
 
     def _summarize(self, df: pd.DataFrame) -> None:
-        print("\n=== Bonus 3: Action Item Owner Analysis ===")
-        print(f"Total unique action item owners: {len(self._owner_counter)}")
-        print("\nTop 10 owners by action item count:")
-        print(self._top_owners_df.head(10).to_string(index=False))
-        print(
-            f"\nOrphaned meetings (no topic-linked follow-up within {self._window}d): "
-            f"{self._orphaned_count} of {len(df)}"
+        _log.info(
+            "=== Bonus 3: Action Item Owner Analysis === Total unique owners: %d"
+            "\nTop 10 owners by action item count:\n%s",
+            len(self._owner_counter),
+            self._top_owners_df.head(10).to_string(index=False),
+        )
+        _log.info(
+            "Orphaned meetings (no topic-linked follow-up within %dd): %d of %d",
+            self._window, self._orphaned_count, len(df),
         )
 
     def _save_charts(self, df: pd.DataFrame, charts_dir: Path) -> None:
@@ -151,7 +156,7 @@ class ActionItemAnalysis(BaseAnalysis):
         fig1.update_layout(height=500, legend_title_text="Owner Type")
         out1 = charts_dir / "bonus3_action_item_owners.html"
         fig1.write_html(str(out1))
-        print(f"Chart -> {out1}")
+        _log.debug("Chart saved: %s", out1)
 
         followup_stats = (
             df.groupby(["call_type", "has_followup"])
@@ -177,7 +182,7 @@ class ActionItemAnalysis(BaseAnalysis):
         fig2.update_layout(height=420)
         out2 = charts_dir / "bonus3_followup_rate.html"
         fig2.write_html(str(out2))
-        print(f"Chart -> {out2}")
+        _log.debug("Chart saved: %s", out2)
 
         aegis_owners = (
             self._top_owners_df[self._top_owners_df["is_aegis"]]
@@ -199,7 +204,7 @@ class ActionItemAnalysis(BaseAnalysis):
         fig3.update_layout(height=460, showlegend=False)
         out3 = charts_dir / "bonus3_aegis_burden.html"
         fig3.write_html(str(out3))
-        print(f"Chart -> {out3}")
+        _log.debug("Chart saved: %s", out3)
 
 
 # ---------------------------------------------------------------------------

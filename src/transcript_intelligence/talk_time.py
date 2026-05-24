@@ -16,6 +16,9 @@ import plotly.graph_objects as go
 from .base import BaseAnalysis
 from .config import DEFAULT_CONFIG, PipelineConfig
 from .ingest import AEGIS_DOMAIN
+from .logger import get_logger
+
+_log = get_logger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CHARTS_DIR = _PROJECT_ROOT / "output" / "charts"
@@ -105,15 +108,17 @@ class TalkTimeAnalysis(BaseAnalysis):
         return df
 
     def _summarize(self, df: pd.DataFrame) -> None:
-        print("\n=== Bonus 2: Talk Time Analysis ===")
-        print("Avg Aegis talk ratio by call type:")
-        print(self._avg_by_type.to_string())
-        print(f"\nFlagged meetings (Aegis over-talking): {len(self._flagged)}")
+        _log.info(
+            "=== Bonus 2: Talk Time Analysis === Avg Aegis talk ratio by call type:\n%s",
+            self._avg_by_type.to_string(),
+        )
+        _log.info("Flagged meetings (Aegis over-talking): %d", len(self._flagged))
         if not self._flagged.empty:
-            print(
+            _log.info(
+                "\n%s",
                 self._flagged[["title", "call_type", "aegis_talk_ratio", "sentiment_score"]]
                 .sort_values("aegis_talk_ratio", ascending=False)
-                .to_string(index=False)
+                .to_string(index=False),
             )
 
     def _save_charts(self, df: pd.DataFrame, charts_dir: Path) -> None:
@@ -158,7 +163,7 @@ class TalkTimeAnalysis(BaseAnalysis):
         )
         out1 = charts_dir / "bonus2_talk_ratio_by_type.html"
         fig1.write_html(str(out1))
-        print(f"Chart -> {out1}")
+        _log.debug("Chart saved: %s", out1)
 
         try:
             import statsmodels  # noqa: F401
@@ -190,7 +195,7 @@ class TalkTimeAnalysis(BaseAnalysis):
         fig2.update_layout(height=460)
         out2 = charts_dir / "bonus2_talk_ratio_vs_sentiment.html"
         fig2.write_html(str(out2))
-        print(f"Chart -> {out2}")
+        _log.debug("Chart saved: %s", out2)
 
 
 # ---------------------------------------------------------------------------

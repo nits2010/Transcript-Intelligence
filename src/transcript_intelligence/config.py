@@ -2,21 +2,15 @@
 
 Config data lives in config/pipeline.yaml.  This module provides:
 
-  ConfigLoader — loads PipelineConfig from a local YAML file or a remote URL.
+  ConfigLoader — loads PipelineConfig from a local YAML file.
                  Call reload() to re-fetch without restarting the process.
 
-  DEFAULT_CONFIG — pre-loaded at import time from the bundled YAML so that
-                   all existing code (modules, notebook) works with zero changes.
+  DEFAULT_CONFIG — pre-loaded at import time from the bundled YAML.
 
-Remote refresh example:
-    from transcript_intelligence.config import config_loader
-    config_loader.load_url("https://internal.example.com/configs/pipeline.yaml")
-    new_cfg = config_loader.config  # now in effect for next pipeline run
 """
 
 from __future__ import annotations
 
-import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -30,6 +24,15 @@ DEFAULT_CONFIG_PATH = _PROJECT_ROOT / "config" / "pipeline.yaml"
 # ---------------------------------------------------------------------------
 # Config dataclasses (pure data — no hardcoded defaults)
 # ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class LoggingConfig:
+    level: str          # DEBUG | INFO | WARNING | ERROR
+    format: str         # "text" | "json"
+    file: str | None    # path for rotating file handler, or None for console-only
+    max_bytes: int
+    backup_count: int
+
 
 @dataclass(frozen=True)
 class ChurnWeights:
@@ -62,6 +65,7 @@ class PipelineConfig:
     trend_colors: dict[str, str]
     sentiment_label_order: tuple[str, ...]
     topic_taxonomy: dict[str, list[str]]
+    logging_config: LoggingConfig
 
 
 # ---------------------------------------------------------------------------
@@ -70,6 +74,7 @@ class PipelineConfig:
 
 def _build_config(data: dict[str, Any]) -> PipelineConfig:
     """Construct a PipelineConfig from a parsed YAML dict."""
+    log_data = data.get("logging", {})
     return PipelineConfig(
         aegis_domain=data["aegis_domain"],
         support_talk_threshold=float(data["support_talk_threshold"]),
@@ -84,11 +89,18 @@ def _build_config(data: dict[str, Any]) -> PipelineConfig:
         trend_colors=dict(data["trend_colors"]),
         sentiment_label_order=tuple(data["sentiment_label_order"]),
         topic_taxonomy={k: list(v) for k, v in data["topic_taxonomy"].items()},
+        logging_config=LoggingConfig(
+            level=str(log_data.get("level", "INFO")),
+            format=str(log_data.get("format", "text")),
+            file=log_data.get("file") or None,
+            max_bytes=int(log_data.get("max_bytes", 10_485_760)),
+            backup_count=int(log_data.get("backup_count", 3)),
+        ),
     )
 
 
 # ---------------------------------------------------------------------------
-# ConfigLoader — local file or remote URL, with reload support
+# ConfigLoader — local file, with reload support
 # ---------------------------------------------------------------------------
 
 class ConfigLoader:
@@ -96,14 +108,13 @@ class ConfigLoader:
 
     Supports:
       load_file(path)  — read from a local filesystem path
-      load_url(url)    — fetch from an HTTP/HTTPS URL (no extra deps)
       reload()         — re-fetch from the last used source
       config           — property returning the current PipelineConfig
     """
 
     def __init__(self) -> None:
         self._config: PipelineConfig | None = None
-        self._last_source: str | None = None  # path or URL as string
+        self._last_source: str | None = None  # path as string
 
     # ------------------------------------------------------------------
     # Load methods
@@ -119,27 +130,13 @@ class ConfigLoader:
         self._last_source = str(path)
         return self._config
 
-    def load_url(self, url: str) -> PipelineConfig:
-        """Fetch config YAML from a remote URL and apply it immediately.
-
-        Example:
-            config_loader.load_url("https://internal.example.com/configs/pipeline.yaml")
-        """
-        with urllib.request.urlopen(url, timeout=10) as response:  # noqa: S310
-            raw = yaml.safe_load(response.read().decode("utf-8"))
-        self._config = _build_config(raw)
-        self._last_source = url
-        return self._config
-
     def reload(self) -> PipelineConfig:
-        """Re-fetch config from the last used source (file or URL).
+        """Re-fetch config from the last used source (file).
 
         Useful for hot-reloading in a long-running process without restart.
         """
         if self._last_source is None:
-            raise RuntimeError("No source loaded yet. Call load_file() or load_url() first.")
-        if self._last_source.startswith(("http://", "https://")):
-            return self.load_url(self._last_source)
+            raise RuntimeError("No source loaded yet. Call load_file() first.")
         return self.load_file(self._last_source)
 
     # ------------------------------------------------------------------
@@ -149,7 +146,7 @@ class ConfigLoader:
     @property
     def config(self) -> PipelineConfig:
         if self._config is None:
-            raise RuntimeError("Config not loaded. Call load_file() or load_url() first.")
+            raise RuntimeError("Config not loaded. Call load_file() first.")
         return self._config
 
     @property

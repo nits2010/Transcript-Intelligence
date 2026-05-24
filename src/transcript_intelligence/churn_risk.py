@@ -18,6 +18,9 @@ import plotly.express as px
 
 from .base import BaseAnalysis, RiskFactor
 from .config import DEFAULT_CONFIG, PipelineConfig
+from .logger import get_logger
+
+_log = get_logger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CHARTS_DIR = _PROJECT_ROOT / "output" / "charts"
@@ -197,12 +200,14 @@ class ChurnRiskAnalysis(BaseAnalysis):
         return df  # input df unchanged
 
     def _summarize(self, df: pd.DataFrame) -> None:
-        print("\n=== Bonus 1: Churn Risk Scorecard ===")
         display_cols = [
             "customer_domain", "tier", "score", "churn_signal_count",
             "avg_sentiment", "support_escalations", "meeting_count",
         ]
-        print(self.result_df[display_cols].to_string(index=False))
+        _log.info(
+            "=== Bonus 1: Churn Risk Scorecard ===\n%s",
+            self.result_df[display_cols].to_string(index=False),
+        )
 
     def _save_charts(self, df: pd.DataFrame, charts_dir: Path) -> None:
         colors = self._config.tier_colors
@@ -231,7 +236,7 @@ class ChurnRiskAnalysis(BaseAnalysis):
         fig1.update_layout(height=max(400, len(sdf) * 22))
         out1 = charts_dir / "bonus1_churn_scorecard.html"
         fig1.write_html(str(out1))
-        print(f"Chart -> {out1}")
+        _log.debug("Chart saved: %s", out1)
 
         fig2 = px.scatter(
             sdf,
@@ -249,7 +254,7 @@ class ChurnRiskAnalysis(BaseAnalysis):
         fig2.update_layout(height=520)
         out2 = charts_dir / "bonus1_churn_scatter.html"
         fig2.write_html(str(out2))
-        print(f"Chart -> {out2}")
+        _log.debug("Chart saved: %s", out2)
 
 
 # ---------------------------------------------------------------------------

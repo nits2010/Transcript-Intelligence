@@ -18,6 +18,9 @@ import plotly.express as px
 
 from .base import BaseAnalysis, CategorizationStrategy
 from .config import DEFAULT_CONFIG, PipelineConfig
+from .logger import get_logger
+
+_log = get_logger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CHARTS_DIR = _PROJECT_ROOT / "output" / "charts"
@@ -127,8 +130,7 @@ class TopicCategorizationAnalysis(BaseAnalysis):
         return df
 
     def _summarize(self, df: pd.DataFrame) -> None:
-        print("\n=== Task 1: Topic Categorization ===")
-        print(self._summary_table.to_string())
+        _log.info("=== Task 1: Topic Categorization ===\n%s", self._summary_table.to_string())
 
     def _save_charts(self, df: pd.DataFrame, charts_dir: Path) -> None:
         chart_df = self._summary_table.reset_index().sort_values("count")
@@ -153,7 +155,7 @@ class TopicCategorizationAnalysis(BaseAnalysis):
         fig.update_layout(height=480, coloraxis_colorbar=dict(title="Avg Sentiment"))
         out = charts_dir / "task1_topic_categories.html"
         fig.write_html(str(out))
-        print(f"Chart -> {out}")
+        _log.debug("Chart saved: %s", out)
 
 
 # ---------------------------------------------------------------------------
