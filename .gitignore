@@ -206,6 +206,9 @@ tempCodeRunnerFile.py
 # Ruff stuff:
 .ruff_cache/
 
+# Project-specific: generated outputs (charts, reports)
+output/
+
 # PyPI configuration file
 .pypirc
 

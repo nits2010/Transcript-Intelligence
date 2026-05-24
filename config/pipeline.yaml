@@ -1,0 +1,189 @@
+# Transcript Intelligence — Pipeline Configuration
+# All thresholds, weights, colors, and taxonomy keywords live here.
+# Edit this file to tune the pipeline without touching Python code.
+# Can be hosted remotely and reloaded at runtime via ConfigLoader.load_url().
+
+# ---------------------------------------------------------------------------
+# Domain
+# ---------------------------------------------------------------------------
+aegis_domain: "@aegiscloud.com"
+
+# ---------------------------------------------------------------------------
+# Talk time — Aegis talk fraction above which a meeting is flagged
+# ---------------------------------------------------------------------------
+support_talk_threshold: 0.65
+external_talk_threshold: 0.60
+
+# ---------------------------------------------------------------------------
+# Action item follow-up detection
+# ---------------------------------------------------------------------------
+followup_window_days: 7
+
+# ---------------------------------------------------------------------------
+# Customer trajectory
+# ---------------------------------------------------------------------------
+min_trajectory_meetings: 3
+trend_delta: 0.30  # ±delta from first-half avg triggers improving/declining
+
+# ---------------------------------------------------------------------------
+# Churn risk weights
+# ---------------------------------------------------------------------------
+churn_weights:
+  churn_signal: 3.0
+  negative_meeting: 2.0
+  technical_issue: 1.5
+  billing_dispute: 2.0
+  support_escalation: 1.0
+  sentiment_adjustment: 2.0  # subtracted: higher sentiment = lower risk
+
+# ---------------------------------------------------------------------------
+# Churn risk tier thresholds
+# ---------------------------------------------------------------------------
+churn_tiers:
+  high: 10.0
+  medium: 5.0
+
+# ---------------------------------------------------------------------------
+# Chart colors
+# ---------------------------------------------------------------------------
+call_type_colors:
+  customer_support: "#EF553B"
+  internal: "#636EFA"
+  external: "#00CC96"
+
+tier_colors:
+  HIGH: "#EF553B"
+  MEDIUM: "#FFA15A"
+  LOW: "#00CC96"
+
+trend_colors:
+  improving: "#00CC96"
+  stable: "#636EFA"
+  declining: "#EF553B"
+
+# ---------------------------------------------------------------------------
+# Sentiment label ordering (worst to best — used for chart axis ordering)
+# ---------------------------------------------------------------------------
+sentiment_label_order:
+  - very-negative
+  - negative
+  - mixed-negative
+  - mixed-positive
+  - positive
+  - very-positive
+
+# ---------------------------------------------------------------------------
+# Topic taxonomy — keywords per canonical category
+# Matching is substring-based against lowercased raw topic tags.
+# Add a keyword here to extend coverage without touching Python code.
+# ---------------------------------------------------------------------------
+topic_taxonomy:
+  "Compliance & Audit":
+    - compliance
+    - compliance reporting
+    - audit
+    - soc 2
+    - hipaa
+    - pci dss
+    - iso 27001
+    - gdpr
+    - cmmc
+    - multi-framework
+    - regulatory
+    - multi-framework support
+
+  "Incident & Outage":
+    - outage
+    - incident
+    - escalation
+    - remediation
+    - postmortem
+    - post-mortem
+    - platform outage
+    - service outage
+    - detect outage
+    - pipeline failure
+    - circuit breaker
+    - incident response
+    - incident communication
+    - incident review
+    - outage post-mortem
+
+  "Customer Renewal & Churn":
+    - renewal
+    - churn
+    - retention
+    - contract
+    - billing
+    - pricing
+    - sla
+    - service credits
+    - overage
+    - billing dispute
+    - churn risk
+
+  "Product & Feature":
+    - feature request
+    - feature gap
+    - product roadmap
+    - product launch
+    - product feedback
+    - roadmap planning
+    - product demo
+    - early access
+    - product bug
+    - workaround
+    - product planning
+
+  "Identity & Access Management":
+    - identity
+    - sso
+    - saml
+    - scim
+    - mfa
+    - okta
+    - ldap
+    - rbac
+    - provisioning
+    - access control
+    - deprovisioning
+    - identity management
+    - identity federation
+    - authentication
+    - certificate
+
+  "Infrastructure & Reliability":
+    - infrastructure
+    - reliability
+    - kafka
+    - pipeline
+    - backup
+    - disaster recovery
+    - architecture
+    - performance
+    - load testing
+    - ingestion
+    - infrastructure reliability
+    - support response time
+
+  "Onboarding & Deployment":
+    - onboarding
+    - deployment
+    - kickoff
+    - migration
+    - launch readiness
+    - integration
+    - connector
+    - configuration
+
+  "Internal Engineering":
+    - sprint planning
+    - sprint retrospective
+    - standup
+    - tech debt
+    - qa
+    - ci/cd
+    - design review
+    - estimation
+    - resource allocation
+    - engineering
