@@ -182,7 +182,22 @@ Talk Time and Customer Trajectory were chosen over alternatives (e.g., late-join
 
 ---
 
-### Decision 4 — Output Format: Interactive HTML over Static Images
+### Decision 4 — Scale: What Changes Beyond 100 Meetings
+
+The current pipeline loads all meetings into a single in-memory DataFrame. This is appropriate for a 100-meeting analytics assignment (completes in ~10 seconds) and keeps the design simple and auditable. At production scale (100k+ meetings) the following changes would be required:
+
+| Layer | Current | At Scale |
+|---|---|---|
+| Ingestion | Sequential `for dir in path.iterdir()` | Parallel reads via `ThreadPoolExecutor`, or streaming from object storage (S3/GCS) |
+| Storage | In-memory DataFrame | Database backing store (Postgres / DuckDB / BigQuery) — incremental runs process only new meetings |
+| Churn scorecard | Full-table scan on each run | Pre-compute domain summaries incrementally as meetings arrive; materialise as a table |
+| Config | YAML file, `reload()` for hot-swap | Already supports `load_url()` — point at a remote config endpoint for fleet-wide updates without redeploy |
+
+The design patterns (Template Method, Strategy, Chain of Responsibility) are scale-agnostic — they govern how each analysis step is structured internally, not how data flows through the system.
+
+---
+
+### Decision 6 — Output Format: Interactive HTML over Static Images
 
 **Chosen:** Plotly HTML charts saved to `output/charts/`.
 
@@ -264,11 +279,11 @@ Open any `.html` file directly in a browser — no server required.
 
 | Module                   | Task                           | Doc                                                                      |
 | ------------------------ | ------------------------------ | ------------------------------------------------------------------------ |
-| `categorize.py`          | Task 1 — Topic Categorization  | [docs/task1_topic_categorization.md](docs/task1_topic_categorization.md) |
-| `sentiment.py`           | Task 2 — Sentiment Analysis    | [docs/task2_sentiment_analysis.md](docs/task2_sentiment_analysis.md)     |
-| `churn_risk.py`          | Bonus 1 — Churn Risk Scorecard | [docs/bonus1_churn_risk.md](docs/bonus1_churn_risk.md)                   |
-| `talk_time.py`           | Bonus 2 — Talk Time Analysis   | [docs/bonus2_talk_time.md](docs/bonus2_talk_time.md)                     |
-| `action_items.py`        | Bonus 3 — Action Item Owners   | [docs/bonus3_action_items.md](docs/bonus3_action_items.md)               |
-| `customer_trajectory.py` | Bonus 4 — Customer Trajectory  | [docs/bonus4_customer_trajectory.md](docs/bonus4_customer_trajectory.md) |
+| `categorize.py`          | Task 1 — Topic Categorization  | [docs/actions/topic_categorization.md](docs/actions/topic_categorization.md) |
+| `sentiment.py`           | Task 2 — Sentiment Analysis    | [docs/actions/sentiment_analysis.md](docs/actions/sentiment_analysis.md)     |
+| `churn_risk.py`          | Bonus 1 — Churn Risk Scorecard | [docs/actions/churn_risk.md](docs/actions/churn_risk.md)                     |
+| `talk_time.py`           | Bonus 2 — Talk Time Analysis   | [docs/actions/talk_time.md](docs/actions/talk_time.md)                       |
+| `action_items.py`        | Bonus 3 — Action Item Owners   | [docs/actions/action_items.md](docs/actions/action_items.md)                 |
+| `customer_trajectory.py` | Bonus 4 — Customer Trajectory  | [docs/actions/customer_trajectory.md](docs/actions/customer_trajectory.md)   |
 
 

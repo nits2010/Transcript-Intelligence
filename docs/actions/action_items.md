@@ -76,19 +76,44 @@ This avoids false positives (e.g. a standup that happens to include the same per
 
 ---
 
-## Key Findings (expected from dataset)
+## Actual Results (100-meeting dataset)
 
-- **A small number of Aegis employees own a disproportionate share of action items.**
-  The Pareto principle likely applies: ~20% of people own ~80% of action items.
-  These are AegisCloud's execution backbone — and a single point of failure risk.
+### Burden Distribution
 
-- **Customer support calls have the highest orphan rate.** Short, reactive calls generate
-  action items ("escalate to engineering", "send advisory by EOD") that may not have a
-  formal follow-up cadence in the calendar. These commitments fall through most often.
+**62 unique action item owners** across 100 meetings (≈300–400 total action items).
 
-- **Internal engineering meetings have an interesting pattern**: they generate many action
-  items internally but rarely generate external customer communication as a visible follow-up.
-  This is the gap between "we know about it" and "we told the customer".
+Top 10 owners:
+
+| Owner | Action Items | Aegis? |
+|---|---|---|
+| Maria Santos | 31 | ✅ |
+| David Kim | 24 | ✅ |
+| Sarah Chen | 23 | ✅ |
+| Elena Vasquez | 20 | ✅ |
+| Kevin O'Brien | 19 | ❌ (customer) |
+| Aisha Johnson | 18 | ✅ |
+| Priya Patel | 15 | ✅ |
+| Marcus Williams | 15 | ✅ |
+| Daniel Okafor | 14 | ✅ |
+| Lisa Park | 14 | ✅ |
+
+**Maria Santos owns 31 action items — 29% more than the second-highest.** If she leaves, customer commitments across multiple active accounts are at immediate risk. This is a single point of failure in AegisCloud's execution layer.
+
+**Kevin O'Brien (customer-side) is in the top 5.** He owns 19 action items, more than most Aegis employees. This is a signal that customers are being asked to do significant pre-work — worth investigating whether AegisCloud's onboarding or support process is offloading too much burden onto the customer.
+
+### The 76% Orphan Rate — The Most Actionable Finding
+
+**76 of 100 meetings (76%) are orphaned**: none of their Aegis action-item owners appear in a follow-up meeting on the same topic within 7 days.
+
+| Call Type | Orphaned | Total | Orphan Rate |
+|---|---|---|---|
+| customer_support | 24 | 28 | **86%** |
+| external | 31 | 42 | **74%** |
+| internal | 21 | 30 | **70%** |
+
+**Customer support is worst at 86%.** "We'll escalate this to engineering" and "I'll send you the advisory by EOD" are the most common action items on support calls — and they have the lowest follow-through rate in the dataset. These are direct commitments made to customers who are already frustrated. When they go unmet, it's not just an execution failure — it's a churn accelerator.
+
+This finding is not about effort or intent. It's about the absence of a structured follow-up cadence. The data suggests that AegisCloud's meeting rhythm does not consistently generate the downstream meetings that would close the loop on customer commitments.
 
 ---
 

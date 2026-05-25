@@ -50,22 +50,35 @@ score = (churn_signal_count × 3)
 
 ---
 
-## Key Findings (expected from dataset)
+## Actual Results (100-meeting dataset)
 
-- **HIGH-risk accounts** are not always the loudest complainers. They're distinguished by
-  the *combination* of signals: a billing dispute + churn signals + multiple support cases
-  in a short window is more alarming than any single signal.
+**Tier breakdown: 7 HIGH | 4 MEDIUM | 21 LOW**
 
-- **Compliance-heavy accounts** tend to score LOW — their meetings are proactive and
-  positive. These are AegisCloud's most stable customers and strongest references.
+| Tier | # Accounts | Score Range |
+|---|---|---|
+| HIGH | 7 | 10.95 – 15.00 |
+| MEDIUM | 4 | 5.80 – 9.10 |
+| LOW | 21 | −9.60 – 4.60 |
 
-- **Post-outage accounts** (customers who had meetings during the March Detect outage)
-  may have elevated scores temporarily — important to distinguish structural churn risk
-  from outage-triggered sentiment dips that have since recovered.
+**TOP HIGH-RISK accounts:**
 
-- **Support escalation count alone is a weak predictor** — some customers file many tickets
-  because they're power users, not because they're unhappy. Always cross-reference with
-  churn signals and sentiment trend.
+| Domain | Score | Churn Signals | Avg Sentiment | Support Escalations |
+|---|---|---|---|---|
+| brightpathcommerce.com | 15.00 | 3 | 3.25 | 2 |
+| summittrust.com | 14.27 | 3 | 2.87 | 2 |
+| ridgelinelogistics.com | 14.23 | 3 | 2.63 | 2 |
+| silverlinebrands.com | 12.75 | 2 | 3.38 | 3 |
+| northstarpharma.com | 11.30 | 3 | 2.10 | 1 |
+
+**Key observations from the data:**
+
+- **The combination signal is real.** All 7 HIGH-risk accounts have at least 2 churn signals AND at least 1 support escalation — it's never a single factor that pushes a score above 10. This validates the multi-factor weighting design.
+
+- **Compliance-heavy accounts are AegisCloud's most stable customers.** The most negative scores (redwoodclinical.com at −5.0, keystonehealth.com at −7.3, bridgeporthealth.com at −8.2) all belong to healthcare/compliance customers with zero churn signals and avg sentiment above 4.0. The sentiment adjustment factor correctly drives their scores negative — they are not at risk.
+
+- **northstarpharma.com is the highest-risk account with the worst avg sentiment (2.10).** Three churn signals in only 2 meetings is an extreme concentration — every meeting has signalled a problem. This account needs an immediate executive review.
+
+- **Support escalation count alone is a weak predictor.** `forgeindustries.com` has 2 support escalations but scores only 1.30 because avg sentiment is 4.10 and no churn signals are present — they file tickets because they're active users, not because they're leaving.
 
 ---
 

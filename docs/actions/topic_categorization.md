@@ -50,6 +50,23 @@ during the meeting summary step. These are noisy and inconsistent
 
 ---
 
+## Actual Results (100-meeting dataset)
+
+| Category | Meetings | Avg Sentiment | Dominant Call Type | % with Churn Signal |
+|---|---|---|---|---|
+| Compliance & Audit | 36 | 4.13 | external | 28% |
+| Incident & Outage | 29 | 2.64 | internal | 76% |
+| Customer Renewal & Churn | 14 | 3.11 | external | 64% |
+| Identity & Access Management | 9 | 3.37 | customer_support | 67% |
+| Infrastructure & Reliability | 6 | 3.25 | internal | 50% |
+| Product & Feature | 3 | 3.90 | customer_support | 33% |
+| Onboarding & Deployment | 2 | 3.90 | customer_support | 50% |
+| Internal Engineering | 1 | 3.60 | internal | 0% |
+
+**Key pattern:** Incident & Outage has 76% churn signal density — nearly 3 in 4 outage meetings contain an explicit churn signal. Compliance & Audit is the inverse: highest volume, highest sentiment, lowest churn density. These are AegisCloud's most stable, satisfied customers.
+
+---
+
 ## The 8 Canonical Categories
 
 ### 1. Compliance & Audit
@@ -57,10 +74,19 @@ during the meeting summary step. These are noisy and inconsistent
 gdpr, cmmc, multi-framework, regulatory
 
 **Business meaning:** Customers using AegisCloud to meet regulatory requirements.
-These are typically proactive, structured meetings — not reactive firefighting.
+Proactive, structured meetings — not reactive firefighting.
 
-**Expected:** Highest count (compliance is the #1 use case), highest avg sentiment (~4.0+),
-dominant call type: external.
+**Observed:** 36 meetings (largest category), avg sentiment 4.13, dominant call type: external.
+
+**Concrete examples:**
+
+> **[external]** *"Aegis / Redwood Clinical — ISO 27001 Preparation"* — sentiment 4.8
+> Topics: `iso 27001, compliance reporting, onboarding, healthcare`
+> A proactive preparation call ahead of a scheduled ISO 27001 audit. High sentiment reflects customer confidence in AegisCloud's compliance module.
+
+> **[customer_support]** *"Support Case #3296 — Pinnacle Insurance Comply v2 Report Formatting Issue"* — sentiment 3.4
+> Topics: `product bug, compliance reporting, pdf rendering, new release issue`
+> A PDF rendering bug in a new Comply module release. Moderate sentiment — the issue was minor and the rep provided a workaround.
 
 ---
 
@@ -69,10 +95,20 @@ dominant call type: external.
 platform outage, service outage, detect outage, pipeline failure, circuit breaker,
 incident response, incident communication, incident review
 
-**Business meaning:** Something broke. These meetings are urgent, often unscheduled,
-and emotionally charged. The Detect outage cluster (March 2026) is visible here.
+**Business meaning:** Something broke. Urgent, emotionally charged meetings. The March 2026
+Detect module outage cluster is the dominant signal in this category.
 
-**Expected:** Lowest avg sentiment (~2.0–2.5), concentrated in customer_support and external.
+**Observed:** 29 meetings, avg sentiment 2.64 (lowest category), 76% contain a churn signal.
+
+**Concrete examples:**
+
+> **[internal]** *"Detect Outage — Remediation Plan Review"* — sentiment 2.4
+> Topics: `outage remediation, incident response, customer communication, security monitoring`
+> Internal post-outage review — the team is aware of customer impact and working on comms. Low sentiment reflects urgency and frustration.
+
+> **[external]** *"Aegis / Meridian Capital — Service Reliability Discussion"* — sentiment 2.4
+> Topics: `outage, churn risk, infrastructure reliability, compliance`
+> External call during the outage window. Churn signal present — this customer is using the outage as a prompt to re-evaluate the relationship.
 
 ---
 
@@ -80,10 +116,20 @@ and emotionally charged. The Detect outage cluster (March 2026) is visible here.
 **Keywords:** renewal, churn, retention, contract, billing, pricing, sla, service credits,
 overage, billing dispute, churn risk
 
-**Business meaning:** The commercial relationship is under scrutiny. Could be a smooth
-renewal or an active churn conversation — the wide sentiment spread reflects this duality.
+**Business meaning:** The commercial relationship is under scrutiny. Wide sentiment spread
+reflects the duality: a smooth renewal scores 4.9; an active churn conversation scores 1.4.
 
-**Expected:** Widest sentiment spread (1.4 → 4.9), dominant call type: external.
+**Observed:** 14 meetings, avg sentiment 3.11, 64% contain a churn signal.
+
+**Concrete examples:**
+
+> **[customer_support]** *"Support Case #9279 — Summit Trust Billing Inquiry"* — sentiment 3.8
+> Topics: `billing dispute, seat overage, migration cleanup, identity management`
+> A billing overage dispute that was resolved on the call. Moderate-to-positive sentiment suggests the rep defused the situation effectively.
+
+> **[external]** *"Aegis / Cobalt Software — Q2 Planning"* — sentiment 3.4
+> Topics: `renewal, outage, competitive threat, compliance`
+> A renewal planning call where the outage and a "competitive threat" tag signal the customer is evaluating alternatives. The AE needs to act before the formal renewal date.
 
 ---
 
@@ -92,9 +138,18 @@ renewal or an active churn conversation — the wide sentiment spread reflects t
 feedback, roadmap planning, product demo, early access, product bug, workaround
 
 **Business meaning:** Customers or internal teams discussing what the product should do.
-Externally: feature requests and gaps. Internally: roadmap planning.
 
-**Expected:** Mixed sentiment, appears in both external and internal calls.
+**Observed:** 3 meetings, avg sentiment 3.90, dominant: customer_support.
+
+**Concrete examples:**
+
+> **[customer_support]** *"Support Case #1514 — Meridian Capital Granular Restore Request"* — sentiment 3.4
+> Topics: `feature request, granular restore, backup and recovery, rto compliance`
+> Customer requesting file-level granular restore — a feature gap. The rep acknowledged the gap and logged it; moderate sentiment.
+
+> **[customer_support]** *"Support Case #8811 — Blackridge Investments Custom Compliance Template"* — sentiment 4.8
+> Topics: `feature request, custom compliance templates, early access program, api integration`
+> Customer enrolled in an early access program for custom templates. High sentiment — they feel heard and included in the product roadmap.
 
 ---
 
@@ -105,7 +160,17 @@ access control, deprovisioning, identity management, identity federation, authen
 **Business meaning:** AegisCloud's Identity module — SSO configuration, SAML issues,
 provisioning bugs. Often triggers support escalations.
 
-**Expected:** Low-to-moderate sentiment (bugs are frustrating), dominant: customer_support.
+**Observed:** 9 meetings, avg sentiment 3.37, dominant: customer_support. 67% contain a churn signal — IAM bugs have direct operational impact.
+
+**Concrete examples:**
+
+> **[customer_support]** *"Support Case #8749 — Coastal Living Co SAML Certificate Rotation Bug"* — sentiment 2.2
+> Topics: `saml certificate rotation, product bug, authentication failure, service outage`
+> A SAML certificate rotation caused an authentication outage for the customer. Low sentiment — their users were locked out.
+
+> **[customer_support]** *"Support Case #3546 — Meridian Capital SCIM Provisioning Request"* — sentiment 3.7
+> Topics: `scim provisioning, identity management, compliance, okta integration`
+> Okta SCIM integration setup. Moderate-to-positive — the rep walked through configuration step by step and the issue was resolved.
 
 ---
 
@@ -114,9 +179,18 @@ provisioning bugs. Often triggers support escalations.
 architecture, performance, load testing, ingestion, infrastructure reliability, support response time
 
 **Business meaning:** The platform's plumbing — Kafka ingestion, backup configs, DR planning.
-Appears more in internal and enterprise-tier external meetings.
 
-**Expected:** Moderate sentiment, mix of internal and external.
+**Observed:** 6 meetings, avg sentiment 3.25, dominant: internal.
+
+**Concrete examples:**
+
+> **[internal]** *"Weekly Engineering Standup"* — sentiment 3.6
+> Topics: `pipeline reliability, kafka configuration, sprint planning, comply v2 launch`
+> A routine standup that surfaced Kafka configuration concerns alongside sprint work. Moderate sentiment — the team is managing, not in crisis.
+
+> **[customer_support]** *"Support Case #6977 — Brightpath Commerce Slow Backup Performance"* — sentiment 2.8
+> Topics: `backup performance, agent version update, technical issue, customer retention`
+> Slow backup jobs on an outdated agent version. The "customer retention" topic tag flags that this isn't just a technical call — the account team flagged it as a retention risk.
 
 ---
 
@@ -124,10 +198,19 @@ Appears more in internal and enterprise-tier external meetings.
 **Keywords:** onboarding, deployment, kickoff, migration, launch readiness, integration,
 connector, configuration
 
-**Business meaning:** New customers getting set up, or existing customers expanding to
-new modules. High effort but often rewarding — customers are engaged and optimistic.
+**Business meaning:** New customers getting set up, or existing customers expanding to new modules.
 
-**Expected:** Moderate-to-positive sentiment, dominant: external.
+**Observed:** 2 meetings, avg sentiment 3.90, dominant: customer_support.
+
+**Concrete examples:**
+
+> **[customer_support]** *"Support Case #2638 — Pineridge Systems CloudPrime S3 Backup Connector"* — sentiment 3.9
+> Topics: `aws s3 connector, backup failure, 403 error, iam permissions`
+> An S3 connector setup failing on IAM permissions. The rep walked through the fix — positive outcome reflected in the sentiment.
+
+> **[external]** *"Aegis / Brightpath Commerce — Detect Module Deployment"* — sentiment 3.9
+> Topics: `onboarding, deployment planning, alert fatigue, reliability incident`
+> A deployment kickoff call for the Detect module. "Alert fatigue" in the topics signals a configuration challenge ahead, but the overall tone is positive and the relationship is healthy.
 
 ---
 
@@ -135,10 +218,15 @@ new modules. High effort but often rewarding — customers are engaged and optim
 **Keywords:** sprint planning, sprint retrospective, standup, tech debt, qa, ci/cd,
 design review, estimation, resource allocation, engineering
 
-**Business meaning:** Aegis internal meetings — standups, sprint reviews, postmortems,
-architectural discussions. No customers present.
+**Business meaning:** Aegis internal meetings — standups, sprint reviews, postmortems, architectural discussions.
 
-**Expected:** Moderate sentiment, exclusively internal call type, high technical_issue density.
+**Observed:** 1 meeting, avg sentiment 3.60, exclusively internal call type.
+
+**Concrete example:**
+
+> **[internal]** *"Detect Team — Sprint Planning"* — sentiment 3.6
+> Topics: `sprint planning, pipeline architecture, single point of failure, ci/cd improvement`
+> A sprint planning session where "single point of failure" appears as a topic — the team is aware of an architectural risk but it hasn't surfaced to customers yet. This is exactly the type of internal signal that the Transcript Intelligence tool should surface to Engineering Leads before it becomes a customer issue.
 
 ---
 

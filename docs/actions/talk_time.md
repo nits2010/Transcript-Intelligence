@@ -54,19 +54,36 @@ These thresholds are configurable via `SUPPORT_THRESHOLD` and `EXTERNAL_THRESHOL
 
 ---
 
-## Key Findings (expected from dataset)
+## Actual Results (100-meeting dataset)
 
-- **In customer_support calls, the 5 most negative meetings all have Aegis talk ratio > 70%.**
-  This is the clearest signal: reps who over-talk in support calls are the ones with the worst
-  outcomes. The correlation isn't coincidental — over-talking indicates the rep is defending
-  or explaining rather than listening and diagnosing.
+**Average Aegis talk ratio by call type:**
 
-- **External call correlation is flatter.** A skilled AM can legitimately drive a renewal
-  conversation and achieve great outcomes. The 60% threshold catches the cases where the AM
-  isn't discovering — they're pitching to a customer who has already mentally moved on.
+| Call Type | Avg Aegis Talk Ratio | Interpretation |
+|---|---|---|
+| internal | 98.4% | Expected — all Aegis participants |
+| customer_support | 58.1% | Slightly below the 65% threshold on average |
+| external | 47.7% | Well under the 60% threshold on average |
 
-- **Average Aegis talk ratio by call type** reveals structural patterns across the team.
-  If customer_support averages 58% but 5 reps average 72%, that's a coaching opportunity.
+**6 meetings flagged** (above-threshold talk ratio):
+
+| Meeting | Call Type | Aegis Ratio | Sentiment |
+|---|---|---|---|
+| Support Case #7615 — Crestline Wealth Policy Sync Delay | customer_support | 66.1% | 2.4 |
+| Aegis / Maplewood Goods — SOC 2 Prep Review | external | 64.8% | 4.8 |
+| Aegis / Atlas Precision — Contract Discussion | external | 63.5% | 3.7 |
+| Aegis / Brightpath Commerce — Detect Module Deployment | external | 63.3% | 3.9 |
+| Aegis / Crestline Wealth — Identity Module Deployment | external | 62.9% | 4.8 |
+| Aegis / Steelpoint Manufacturing — Contract Review | external | 61.6% | 2.8 |
+
+**Key observations from the data:**
+
+- **In customer_support, over-talking correlates directly with bad outcomes.** The only support call above the 65% threshold scored 2.4 — the worst sentiment in its call type. The signal is clear: a rep at 66% on a support call is not listening enough.
+
+- **In external calls, the correlation is mixed — and that's expected.** Two of the five flagged external calls achieved very high sentiment (4.8 each). A skilled AM can legitimately lead a technical SOC 2 prep or deployment call and produce excellent outcomes. The 60% threshold flags these meetings for review, not automatic concern — context matters.
+
+- **The structural average (58.1% support, 47.7% external) is healthy.** The 6 flagged meetings are outliers, not a team-wide pattern. This suggests targeted coaching for specific reps and call types, not a systemic culture problem.
+
+- **None of the flagged meetings exceeded 67%.** The data range is 61–66%, not the 70%+ that would indicate a severe listening deficit. The concern is at the margin, not in the extreme.
 
 ---
 

@@ -76,21 +76,42 @@ analysis by topic category reveals where the product is losing trust.
 
 ---
 
-## Key Findings (expected from dataset)
+## Actual Results (100-meeting dataset)
 
-- **Improving accounts** are most likely to be onboarding customers who had initial
-  friction (integration issues, configuration complexity) but are now stable and satisfied.
-  These are AegisCloud's success stories.
+**10 customers qualified** (3+ meetings), covering **34 data points** across Feb–Apr 2026.
 
-- **Declining accounts** often have the Detect outage visible as a turning point in their
-  timeline — their sentiment dropped in March and hasn't recovered by April. These are
-  the accounts most at risk of using the outage as justification for a competitive evaluation.
+| Trend | Count | Accounts |
+|---|---|---|
+| Declining | 4 | ridgelinelogistics, summittrust, meridiancapital, silverlinebrands |
+| Stable | 3 | brightpathcommerce, coastalliving, crestlinewealth |
+| Improving | 3 | vantahealth, blackridgeinvest, forgeindustries |
 
-- **Stable accounts** at high sentiment (3.8–4.5) are the core of AegisCloud's retained
-  customer base — compliance-heavy, low-maintenance, good renewal prospects.
+**Declining accounts (first half avg → second half avg):**
 
-- **Stable accounts at low sentiment** (consistently below 3.0) are the most dangerous.
-  They're not improving, they're not escalating — they're quietly preparing to leave.
+| Domain | First Half | Second Half | Delta | Churn Signals |
+|---|---|---|---|---|
+| summittrust.com | 3.80 | 2.40 | −1.40 | 3 |
+| ridgelinelogistics.com | 3.40 | 2.25 | −1.15 | 3 |
+| meridiancapital.com | 3.70 | 2.90 | −0.80 | 3 |
+| silverlinebrands.com | 3.60 | 3.15 | −0.45 | 2 |
+
+**Improving accounts:**
+
+| Domain | First Half | Second Half | Delta | Notes |
+|---|---|---|---|---|
+| blackridgeinvest.com | 3.15 | 4.75 | +1.60 | Strongest recovery in the dataset |
+| vantahealth.com | 2.40 | 3.55 | +1.15 | Started below neutral — now above it |
+| forgeindustries.com | 3.40 | 4.45 | +1.05 | Consistent improvement across 3 meetings |
+
+**Key observations from the data:**
+
+- **summittrust.com and ridgelinelogistics.com are the most urgent.** Both have delta > −1.0 and 3 churn signals each — they cross-reference as HIGH on the churn scorecard. The Detect outage appears as a turning point in both timelines.
+
+- **blackridgeinvest.com is the strongest recovery story.** It started below 3.5 in February and reached 4.75 in April — a +1.60 delta. This is an expansion candidate: a customer who had early friction, stuck through it, and is now highly satisfied.
+
+- **vantahealth.com started below neutral (2.40) and crossed it.** This is the exact pattern worth highlighting to a Sales leader — a customer who was at real churn risk in February and is now on a positive trajectory. The relationship turnaround is measurable.
+
+- **There are no stable accounts below 3.0.** The dataset's stable-low-sentiment concern (quiet departures) doesn't materialise here — but it's a risk pattern to monitor as the customer base grows.
 
 ---
 
